@@ -1,0 +1,7 @@
+{
+  "watch": ["build/"],
+  "ext": ".*",
+  "exec": "npm run bot:run",
+  "delay": 500,
+  "legacy-watch": true
+}
