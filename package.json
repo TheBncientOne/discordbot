@@ -1,0 +1,20 @@
+{
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bot.js",
+    "server": "nodemon bot.js "
+
+  },
+
+
+  "dependencies": {
+    "cli.js": "^1.0.2",
+    "discord.js": "^12.5.3",
+    "dotenv": "^14.2.0",
+    "opusscript": "^0.0.8"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
