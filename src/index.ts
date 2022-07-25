@@ -1,82 +1,53 @@
 import dotenv from "dotenv";
-import Discord from "discord.js";
 import { logger } from "./logger.js";
+import {
+  Client,
+  IntentsBitField,
+} from "discord.js";
 
 /** Load .env file into process.env */
-const config = dotenv.config();
+dotenv.config();
 
-const bot = new Discord.Client();
+const intents = new IntentsBitField();
+/** Privileged intents */
+intents.add("GuildMembers");
+intents.add("MessageContent");
+
+intents.add("Guilds");
+intents.add("GuildMessages");
+intents.add("GuildMessageReactions");
+intents.add("GuildVoiceStates");
+
+const prefix = "!";
+
+const client = new Client({
+  intents,
+  allowedMentions: {
+    parse: ["roles", "users"],
+    repliedUser: true,
+  },
+});
+
+client.login(process.env.BOT_TOKEN!);
+
+
 (async () => {
   logger.info("Starting Discord bot");
 
-  const user = await bot.login(process.env.BOT_TOKEN);
-  logger.info(`Logged in as ${user}`);
-
-  bot.on("ready", () => {
-    console.log(`Logged in as ${bot.user?.tag}!`);
+  client.on("ready", () => {
+    logger.info(`Logged in as ${client.user?.username}!`);
   });
+
+  client.on("messageCreate", (message) => {
+    logger.info(`Got message: ${message}`);
+
+    /** Example prefix  */
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    const command = String(message).replace('!', "")
+
+    if (command === 'ping') 
+      message.channel.send('pong!')
+  });
+
+  
 })();
-// bot.on("voiceStateUpdate", (oldState, newState) => {
-//   if (newState.id === bot.user.id && newState.serverMute) {
-//     newState.setMute(false);
-//   }
-// });
-
-// bot.on("message", (message) => {
-//   try {
-//     let vc = message.member.voice.channel;
-//     if (!vc && message.member.id !== bot.user.id) {
-//       message.reply("vlez vuv vc we bot");
-//     } else {
-//       let zaglavie = message.content + ".mp3";
-//       if (message.content === "napusni") vc.leave();
-//       else if (keywords.includes(zaglavie)) {
-//         message.reply("puskam shefe");
-//         joinVCMUSIC(vc, zaglavie);
-//       } else if (message.content === "gei")
-//         message.reply({ files: [cringe("./cringe/")] });
-//       else if (message.content === "bashta")
-//         message.reply({ files: [cringe("./peiki/")] });
-//     }
-//   } catch (DiscordAPIError) {}
-// });
-
-// function joinVCMUSIC(voiceChannel, AudioName) {
-//   isReady = false;
-//   if (!voiceChannel) {
-//     isReady = true;
-//   } else {
-//     voiceChannel
-//       .join()
-//       .then((connection) => {
-//         console.log(
-//           "Playing " +
-//             AudioName +
-//             " in server " +
-//             voiceChannel.guild.name +
-//             " at",
-//           new Date().toLocaleTimeString()
-//         );
-//         isPlaying = true;
-//         connection.on("disconnect", () => {
-//           isReady = true;
-//         });
-//         let dispatcher = connection.play("./muzika/" + AudioName);
-//         dispatcher.on("finish", () => {
-//           voiceChannel.leave();
-//           isReady = true;
-//         });
-//       })
-//       .catch((err) => console.log(err));
-//   }
-// }
-
-// function cringe(path) {
-//   let temp = fs.readdirSync(path);
-//   let snimka = temp[getRandomInt(temp.length - 1)];
-//   return path + snimka;
-// }
-
-// function getRandomInt(max) {
-//   return Math.floor(Math.random() * max);
-// }
